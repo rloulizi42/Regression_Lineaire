@@ -6,11 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 # importer le trainset
 
 trainset = pd.read_csv('../data/train/trainset.csv')
-X_train = trainset.iloc[:, [5,6,8,9,10,11]].values
+X_train = trainset.iloc[:, [5,6,8,9,10,11,12]].values
+X_train[:, 6] = pd.to_datetime(X_train[:, 6])
 y_train = trainset.iloc[:, 4].values 
 X_trainFrame = pd.DataFrame(X_train)
 
@@ -23,8 +23,9 @@ dataset2 = pd.read_csv('../data/valid/test_2017-07-13.csv')
 
 testset = dataset1.append(dataset2)
 
-testsetFrame = pd.DataFrame(testset)
-X_test = testset.iloc[:, [5,6,8,9,10,11]].values
+testsetFrame = pd.DataFrame(testset) 
+X_test = testset.iloc[:, [5,6,8,9,10,11,12]].values
+X_test[:, 6] = pd.to_datetime(X_test[:, 6])
 y_test = testset.iloc[:, 4].values
 y_test = y_test.reshape(-1,1)
 X_testFrame = pd.DataFrame(X_test)
@@ -46,25 +47,21 @@ X_train[:, 4] = labelencoder_X_train.fit_transform(X_train[:, 4])
 labelencoder_X_test = LabelEncoder()
 X_test[:, 4] = labelencoder_X_test.fit_transform(X_test[:, 4])
 
-# appliquer le feature Scaling
-
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-X_train = sc.fit_transform(X_train)
-X_test = sc.fit_transform(X_test)
-
 # construction du modele
  
 from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
-regressor.fit(X_train, y_train)
+regressor.fit(X_train, y_train) 
 
 # prediction
 
 y_pred = regressor.predict(X_test)
 
-# Visualiser les resultats
+# calcul du coefficient de determination
 
-plt.scatter(X_test[:, 0], y_test, color='red')
-plt.plot(X_train, regressor.predict(X_train), color='blue')
-plt.show()
+from sklearn.metrics import r2_score
+r2_score(y_test, y_pred) #0.86610545683669771
+
+# calcul du coefficient de determination ajuste
+
+1 - (1-r2_score(y_test, y_pred))*(len(y_train)-1)/(len(y_train) - X_train.shape[1]-1) #0.8659610405343644
