@@ -39,13 +39,17 @@ y_test = imputer.transform(y_test)
 
 # gerer la variable categorique 'workday_2'
 
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 labelencoder_X_train = LabelEncoder()
 X_train[:, 4] = labelencoder_X_train.fit_transform(X_train[:, 4])
+onehotencoder = OneHotEncoder(categorical_features= [4])
+X_train = onehotencoder.fit_transform(X_train).toarray()
 
 labelencoder_X_test = LabelEncoder()
 X_test[:, 4] = labelencoder_X_test.fit_transform(X_test[:, 4])
+onehotencoder = OneHotEncoder(categorical_features= [4], n_values=2)
+X_test = onehotencoder.fit_transform(X_test).toarray()
 
 # construction du modele
  
@@ -60,8 +64,13 @@ y_pred = regressor.predict(X_test)
 # calcul du coefficient de determination
 
 from sklearn.metrics import r2_score
-r2_score(y_test, y_pred) #0.86610545683669771
+r2_score(y_test, y_pred) # Out: 0.86373647013860066
 
 # calcul du coefficient de determination ajuste
 
-1 - (1-r2_score(y_test, y_pred))*(len(y_train)-1)/(len(y_train) - X_train.shape[1]-1) #0.8659610405343644
+1 - (1-r2_score(y_test, y_pred))*(len(y_train)-1)/(len(y_train) - X_train.shape[1]-1)
+# Out: 0.86356847688249172
+
+# Ecriture d'un fichier csv de reponse
+
+testset.to_csv('resultat.csv', sep=';')
