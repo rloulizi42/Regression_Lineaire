@@ -11,7 +11,7 @@ import pandas as pd
 trainset = pd.read_csv('../data/train/trainset.csv')
 X_train = trainset.iloc[:, [5,6,8,9,10,11,12]].values
 X_train[:, 6] = pd.to_datetime(X_train[:, 6])
-y_train = trainset.iloc[:, 4].values 
+y_train = trainset.iloc[:, 4].values
 X_trainFrame = pd.DataFrame(X_train)
 
 # importer le testset
@@ -23,14 +23,14 @@ dataset2 = pd.read_csv('../data/valid/test_2017-07-13.csv')
 
 testset = dataset1.append(dataset2)
 
-testsetFrame = pd.DataFrame(testset) 
+testsetFrame = pd.DataFrame(testset)
 X_test = testset.iloc[:, [5,6,8,9,10,11,12]].values
 X_test[:, 6] = pd.to_datetime(X_test[:, 6])
 y_test = testset.iloc[:, 4].values
 y_test = y_test.reshape(-1,1)
 X_testFrame = pd.DataFrame(X_test)
 
-# gerer les donnes manquantes 
+# gerer les donnes manquantes
 
 from sklearn.preprocessing import Imputer
 imputer = Imputer(missing_values='NaN', strategy="mean")
@@ -52,10 +52,10 @@ onehotencoder = OneHotEncoder(categorical_features= [4], n_values=2)
 X_test = onehotencoder.fit_transform(X_test).toarray()
 
 # construction du modele
- 
+
 from sklearn.linear_model import LinearRegression
 regressor = LinearRegression()
-regressor.fit(X_train, y_train) 
+regressor.fit(X_train, y_train)
 
 # prediction
 
@@ -70,7 +70,3 @@ r2_score(y_test, y_pred) # Out: 0.86373647013860066
 
 1 - (1-r2_score(y_test, y_pred))*(len(y_train)-1)/(len(y_train) - X_train.shape[1]-1)
 # Out: 0.86356847688249172
-
-# Ecriture d'un fichier csv de reponse
-
-testset.to_csv('resultat.csv', sep=';')
